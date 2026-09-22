@@ -8,8 +8,8 @@ def buscar_dados():
 
     #print(response.status_code)
     #print(response.json())
-    dados = response.json()
-    print(type(response.status_code))
-    return(dados)
+    
+    if(response.status_code == 200):
+        dados = response.json()
+        return(dados)
 
-buscar_dados()
