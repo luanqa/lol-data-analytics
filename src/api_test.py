@@ -28,10 +28,21 @@ def buscar_dadosRiot(gameName, tagLine):
         return response.json()
     print(response.text)
 
+def buscar_partidas(nick, tag):
+    dados = buscar_dadosRiot(nick, tag)
+    params = {"count": 10}
+    if dados:
+        print("Jogador Encontrado")
+        print("PUUID: ", dados["puuid"])
+        puuid = dados["puuid"]
+        url = f"https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/{quote(puuid)}/ids"
+        response = requests.get(url, params=params, headers={"X-Riot-Token": API_KEY})
+        dados = response.json()
+        if(dados):
+            return dados
 
-dados = buscar_dadosRiot("THE TARV", "YONCE")
-if dados:
-    print("Jogador Encontrado")
-    print("nome: ", dados["gameName"])
-    print("Tag: ", dados["tagLine"])
-    print("PUUID: ", dados["puuid"])
+dados = buscar_partidas("THE TARV", "YONCE")
+cont = 1
+for i in dados:
+    print (cont, " - ", i)
+    cont = cont + 1
