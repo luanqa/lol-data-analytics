@@ -1,3 +1,4 @@
+from datetime import datetime, timezone, timedelta
 import os
 import requests
 import json
@@ -40,9 +41,27 @@ def buscar_partidas(nick, tag):
         dados = response.json()
         if(dados):
             return dados
+def salvar_dados():
+    dados = buscar_partidas("THE TARV", "YONCE")
+    with open("data/raw/match_ids.json", "w", encoding="utf-8") as arquivo:
+        json.dump(dados, arquivo, indent=4, ensure_ascii=False)
 
-dados = buscar_partidas("THE TARV", "YONCE")
-cont = 1
-for i in dados:
-    print (cont, " - ", i)
-    cont = cont + 1
+def ler_dados():
+    with open("data/raw/match_ids.json", "r", encoding="utf-8") as arquivo:
+        dados = json.load(arquivo)
+    return dados
+
+def partida():
+    dados = ler_dados()
+    #for i in dados:
+    url = f"https://americas.api.riotgames.com/lol/match/v5/matches/{quote(dados[0])}"
+    response = requests.get(url, headers={"X-Riot-Token": API_KEY})
+    dados_partida = response.json()
+    print (dados_partida["metadata"]["matchId"])
+    data = dados_partida["info"]["gameStartTimestamp"]
+    fuso_br = timezone(timedelta(hours=-3))
+    data = datetime.fromtimestamp(data / 1000, tz=fuso_br)
+    print(data.strftime("%d/%m/%Y %H:%M:%S"))
+    print (dados_partida["info"]["gameDuration"])
+    print(dados_partida["info"]["gameMode"])
+partida()
